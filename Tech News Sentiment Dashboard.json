@@ -1,0 +1,266 @@
+{
+  "name": "Tech News Sentiment Dashboard",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "27708979-adef-469d-b1ce-909549772ca9",
+      "name": "When clicking \"Execute Workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/feed/",
+        "options": {}
+      },
+      "id": "8e7efa1a-8ce4-4faf-92f4-e70483d6b3b9",
+      "name": "TechCrunch RSS",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "id": "52b7d22e-d9fa-40af-81e8-cc6ce984becd",
+      "name": "Limit 3 Items",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={{$env.GEMINI_API_KEY}}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "contents",
+              "value": "={{ [{\"parts\": [{\"text\": \"Analyze this news headline and description:\\n\\nHeadline: \" + $json.title + \"\\nDescription: \" + $json.contentSnippet + \"\\n\\nTask: Analyze the sentiment and summarize it.\\n\\nOutput format (JSON only):\\n{\\n  \\\"headline\\\": \\\"\" + $json.title + \"\\\",\\n  \\\"summary_th\\\": \\\"Summarize in 1 sentence in Thai\\\",\\n  \\\"sentiment_score\\\": (Score 1-10 where 1 is negative, 10 is positive),\\n  \\\"category\\\": \\\"Choose one: AI, Crypto, Business, Hardware, Software\\\",\\n  \\\"keywords\\\": \\\"3 keywords comma separated\\\"\\n}\"}]}] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "19f2485b-ecb8-4019-bb66-37fd366d1034",
+      "name": "Gemini AI Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        0,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// แปลง String ที่ได้จาก AI ให้เป็น JSON Object จริงๆ\nconst response = $input.all()[0].json.candidates[0].content.parts[0].text;\n\n// ลบเครื่องหมาย ```json ออกเพื่อให้ Parse ได้\nconst cleanJson = response.replace(/```json/g, '').replace(/```/g, '').trim();\n\nreturn JSON.parse(cleanJson);"
+      },
+      "id": "8097892c-68a9-4ad8-9bdd-87a53696dfc1",
+      "name": "Clean Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "YOUR_GOOGLE_SHEET_URL_HERE",
+          "__regex": "https:\\/\\/(?:drive|docs)\\.google\\.com(?:\\/.*|)\\/d\\/([0-9a-zA-Z\\-_]+)(?:\\/.*|)"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Headline": "={{ $json.headline }}",
+            "Summary": "={{ $json.summary_th }}",
+            "Score": "={{ $json.sentiment_score }}",
+            "Category": "={{ $json.category }}",
+            "Keywords": "={{ $json.keywords }}",
+            "Date": "={{ new Date().toLocaleString(\"th-TH\") }}"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        32
+      ],
+      "id": "de60eaa6-f60a-4565-b2c7-5ce7c1249eba",
+      "name": "Tech_News_Analysis",
+      "credentials": {
+        "googleApi": {
+          "id": "Ch7JjFrfckENcfzJ",
+          "name": "Google Service Account account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking \"Execute Workflow\"": {
+      "main": [
+        [
+          {
+            "node": "TechCrunch RSS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TechCrunch RSS": {
+      "main": [
+        [
+          {
+            "node": "Limit 3 Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit 3 Items": {
+      "main": [
+        [
+          {
+            "node": "Gemini AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini AI Analysis": {
+      "main": [
+        [
+          {
+            "node": "Clean Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Data": {
+      "main": [
+        [
+          {
+            "node": "Tech_News_Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false,
+    "timezone": "Asia/Bangkok"
+  },
+  "versionId": "7c2a6eed-ab73-41a3-bdd1-249c1a6a0725",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "1Tg4ZD1tONK8565M",
+  "tags": []
+}
