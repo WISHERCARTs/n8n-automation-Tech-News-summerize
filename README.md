@@ -23,10 +23,10 @@ TechCrunch RSS → จำกัด 3 ข่าว → Gemini AI วิเคร�
 
 ## 📋 สิ่งที่ต้องเตรียม
 
-1. ✅ **n8n** (self-hosted หรือ cloud)
-2. ✅ **Gemini API Key** - [รับ API Key ที่นี่](https://aistudio.google.com/apikey)
-3. ✅ **Google Service Account** - สำหรับเขียน Google Sheets
-4. ✅ **Google Sheets** - สร้าง sheet พร้อม columns
+1.  **n8n** (self-hosted หรือ cloud)
+2.  **Gemini API Key** - [รับ API Key ที่นี่](https://aistudio.google.com/apikey)
+3.  **Google Service Account** - สำหรับเขียน Google Sheets
+4.  **Google Sheets** - สร้าง sheet พร้อม columns
 
 ---
 
