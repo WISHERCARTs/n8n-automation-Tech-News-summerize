@@ -1,4 +1,4 @@
-# 📊 Tech News Sentiment Dashboard
+# Tech News Sentiment Dashboard
 
 > Workflow สำหรับดึงข่าว Tech มาวิเคราะห์ Sentiment ด้วย AI แล้วบันทึกลง Google Sheets
 
@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 Workflow ทำอะไร?
+## Workflow ทำอะไร?
 
 ```
 TechCrunch RSS → จำกัด 3 ข่าว → Gemini AI วิเคราะห์ → บันทึก Google Sheets
@@ -21,7 +21,7 @@ TechCrunch RSS → จำกัด 3 ข่าว → Gemini AI วิเคร�
 
 ---
 
-## 📋 สิ่งที่ต้องเตรียม
+## สิ่งที่ต้องเตรียม
 
 1.  **n8n** (self-hosted หรือ cloud)
 2.  **Gemini API Key** - [รับ API Key ที่นี่](https://aistudio.google.com/apikey)
@@ -30,7 +30,7 @@ TechCrunch RSS → จำกัด 3 ข่าว → Gemini AI วิเคร�
 
 ---
 
-## 🚀 ขั้นตอนการติดตั้ง
+## ขั้นตอนการติดตั้ง
 
 ### Step 1: ตั้งค่า Environment Variable
 
@@ -44,7 +44,7 @@ docker run -e GEMINI_API_KEY="your-api-key-here" n8nio/n8n
 GEMINI_API_KEY=your-api-key-here
 ```
 
-> ⚠️ **อย่าใส่ API Key โดยตรงใน workflow file!**
+> **อย่าใส่ API Key โดยตรงใน workflow file!**
 
 ---
 
@@ -88,12 +88,12 @@ GEMINI_API_KEY=your-api-key-here
 
 เปิด workflow แล้วแก้ไข:
 
-#### 📌 Node: Gemini AI Analysis
+#### Node: Gemini AI Analysis
 
 - ตรวจสอบว่า URL ใช้ `{{$env.GEMINI_API_KEY}}` แล้ว
 - หรือเปลี่ยนเป็น API Key ของคุณ (ไม่แนะนำ)
 
-#### 📌 Node: Tech_News_Analysis (Google Sheets)
+#### Node: Tech_News_Analysis (Google Sheets)
 
 - คลิกที่ node
 - เลือก **Credential** ที่สร้างไว้
@@ -102,7 +102,7 @@ GEMINI_API_KEY=your-api-key-here
 
 ---
 
-## 🧪 ทดสอบ Workflow
+## ทดสอบ Workflow
 
 1. คลิก **Execute Workflow**
 2. รอสักครู่ให้ทำงานเสร็จ
@@ -110,7 +110,7 @@ GEMINI_API_KEY=your-api-key-here
 
 ---
 
-## 📁 โครงสร้างไฟล์
+## โครงสร้างไฟล์
 
 ```
 n8n project/
@@ -120,7 +120,7 @@ n8n project/
 
 ---
 
-## ⚙️ Customization
+## Customization
 
 ### เปลี่ยน RSS Feed
 
